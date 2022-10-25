@@ -1,8 +1,11 @@
 
 import numpy as np
+import matplotlib.pyplot as plt
 
-""" Formulación TDMA para conducción unidimensional en estado estable
-    sin generación, pared plana, temperaturas fijas en los extremos"""
+""" CASO 3: Formulación TDMA para conducción unidimensional en estado estable
+    con generación (e), pared plana, temperatura fija en lado izquierdo
+    convección en el lado derecho. Ver Ejemplo 5.1 Transferencia de calor de la
+    Cengel"""
 
 
 def TDMA(a,b,c,d):
@@ -32,39 +35,55 @@ def TDMA(a,b,c,d):
 
 #conducción 1D estado estable. Temperaturas fijas en extremos, sin generación
 TL=0
-TR=100
-nodos=10
+nodos=100
+L=0.04
+dx=L/(nodos-1)
+malla=np.linspace(0,L,nodos)
+e=5000000
+k=28
+h=45
+T_amb=30
 
-a=np.zeros(nodos)
-b=np.zeros(nodos)
-d=np.zeros(nodos)
+a=np.zeros(nodos)  # LOWER
+b=np.zeros(nodos)  # MAIN
+c=np.zeros(nodos)  # UPPER
+d=np.zeros(nodos)  # RIGHT HAND
 
-# ensamblar [a] y [c]
+# ensamblar [a] 
 a[0]=0
-a[-1]=0
+a[-1]=1
 
 for i in range(1,nodos-1):
-    a[i]=0.5
+    a[i]=1./(dx**2)
 
-c=np.copy(a)
+# ensamblar [c]
+c[0]=0
+c[-1]=0
+
+for i in range(1,nodos-1):
+    c[i]=1./(dx**2)
+
 
 
 # ensamblar [b] diagonal principal
 
 b[0]=1
-b[-1]=1
-
+b[-1]=-(1+(h*dx/k))
 for i in range(1, nodos-1):
-    b[i]=-1
+    b[i]=-2./(dx**2)
 
 
 # ensamblar vector de términos del lado derecho
 d[0]=TL
-d[-1]=TR
+d[-1]=-(h*dx*T_amb/k)-((e*dx**2)/(2*k))
 
 for i in range(1, nodos-1):
-    d[i]=0
+    d[i]=-e/k
 
 # LLamar a la función TDMA
-x = TDMA(a,b,c,d)
-print(x)
+T = TDMA(a,b,c,d)
+print(T)
+
+plt.plot(malla,T)
+plt.show()
+

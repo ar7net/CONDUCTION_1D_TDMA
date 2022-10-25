@@ -1,8 +1,9 @@
 
 import numpy as np
+import matplotlib.pyplot as plt
 
-""" Formulación TDMA para conducción unidimensional en estado estable
-    sin generación, pared plana, temperaturas fijas en los extremos"""
+""" CASO 2: Formulación TDMA para conducción unidimensional en estado estable
+    con generación (e), pared plana, temperaturas fijas en los extremos"""
 
 
 def TDMA(a,b,c,d):
@@ -33,7 +34,12 @@ def TDMA(a,b,c,d):
 #conducción 1D estado estable. Temperaturas fijas en extremos, sin generación
 TL=0
 TR=100
-nodos=10
+nodos=100
+L=0.1
+dx=L/(nodos-1)
+malla=np.linspace(0,L,nodos)
+e=5000000
+k=48
 
 a=np.zeros(nodos)
 b=np.zeros(nodos)
@@ -44,7 +50,7 @@ a[0]=0
 a[-1]=0
 
 for i in range(1,nodos-1):
-    a[i]=0.5
+    a[i]=1./(dx**2)
 
 c=np.copy(a)
 
@@ -55,7 +61,7 @@ b[0]=1
 b[-1]=1
 
 for i in range(1, nodos-1):
-    b[i]=-1
+    b[i]=-2./(dx**2)
 
 
 # ensamblar vector de términos del lado derecho
@@ -63,8 +69,12 @@ d[0]=TL
 d[-1]=TR
 
 for i in range(1, nodos-1):
-    d[i]=0
+    d[i]=-e/k
 
 # LLamar a la función TDMA
-x = TDMA(a,b,c,d)
-print(x)
+T = TDMA(a,b,c,d)
+print(T)
+
+plt.plot(malla,T)
+plt.show()
+
